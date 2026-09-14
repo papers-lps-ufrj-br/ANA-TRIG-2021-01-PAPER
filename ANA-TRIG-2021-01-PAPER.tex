@@ -1,3 +1,4 @@
+\pdfoutput=1
 \nonstopmode
 
 \RequirePackage{silence}
@@ -7,7 +8,7 @@
 %-------------------------------------------------------------------------------
 % This file provides a skeleton ATLAS paper.
 %-------------------------------------------------------------------------------
-% \pdfoutput=1
+%\pdfoutput=1
 % The \pdfoutput command is needed by arXiv/JHEP/JINST to ensure use of pdflatex.
 % It should be included in the first 5 lines of the file.
 \pdfinclusioncopyfonts=1
@@ -148,12 +149,15 @@
 
 \tableofcontents
 
-\include{sections/01_introduction/main} % ok
-\include{sections/02_trigger/main}
-\include{sections/03_ringer/main} % 
-\include{sections/04_operation/main} % ok
-\include{sections/05_analysis/main} % ok
-\include{sections/06_conclusion/main} % ok
+\newpage 
+
+\input{sections/Introduction} % ok
+\input{sections/ATLAS}
+\input{sections/ElectronID}
+\input{sections/Ringer} % 
+\input{sections/Operations} % ok
+\input{sections/Analysis} % ok
+\input{sections/Conclusions} % ok
 
 %-------------------------------------------------------------------------------
 % When your ATLAS paper or PUB/CONF note is ready to be published,

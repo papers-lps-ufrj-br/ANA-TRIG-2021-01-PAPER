@@ -71,7 +71,7 @@ run_latexmk:
 #%.pdf:	%.tex *.tex bib/*.bib
 %.pdf:	%.tex *.tex *.bib
 	$(PDFLATEX) $<
-	-$(BIBTEX)  $(basename $<)
+	$(BIBTEX)  $(basename $<)
 	$(PDFLATEX) $<
 	$(PDFLATEX) $<
 #-------------------------------------------------------------------------------

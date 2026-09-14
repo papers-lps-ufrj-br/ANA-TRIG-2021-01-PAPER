@@ -11,13 +11,14 @@
 % If given, adds draft version on front page, a 'DRAFT' box on top of every other page, 
 % and line numbers.
 % Comment or remove in the final version.
-\AtlasVersion{3}
+\AtlasVersion{4}
 
 % Abstract - % directly after { is important for correct indentation
 \AtlasAbstract{%
 
-Electron trigger identification is a crucial input to many ATLAS physics analyses. To cope with the increase in peak LHC luminosity from 2017 to 2018, which raised the number of proton--proton interactions per beam-crossing to about 60, trigger algorithms were optimized to keep the background trigger rates low while retaining high efficiency for physics analyses. 
-In the second half of 2017, the Neural-Ringer algorithm, based on a set of multi-layer perceptron models, replaced the cut-based selection algorithm used in the FastCalo decision step of high-level trigger sequence for events containing electrons above 15 GeV. This was done as part of the ATLAS trigger CPU optimization reduction campaign where it was the first time a neural-network method was employed as a baseline algorithm for event selection in the ATLAS trigger system. The selection algorithm resulted in an early rejection of at least 13 times more background than the previous algorithm strategy, while leaving the electron selection efficiency nearly unchanged.
+Identifying electrons at the trigger level is crucial for many analyses in the ATLAS experiment. The instantaneous LHC luminosity increase from 2017 to 2018 resulted in up to 60 proton-proton interactions per bunch-crossing and challenged the electron trigger system. Trigger algorithms were then optimized to maintain high efficiency and a low background rate in this harsh environment.  The Neural-Ringer algorithm was a part of this optimization in the high-level trigger, selecting electrons with a transverse energy above 15 GeV. Based on a set of multi-layer perceptron models, it is the first neural network employed as a baseline algorithm in the ATLAS trigger system.  This algorithm resulted in an early rejection rate 13 times higher than the previous cut-based algorithm, with minimal loss in electron detection efficiency.
+
+%Electron trigger identification is a crucial input to many ATLAS physics analyses. To cope with the increase in peak LHC luminosity from 2017 to 2018, which raised the number of proton--proton interactions per beam-crossing to about 60, trigger algorithms were optimized to keep the background trigger rates low while retaining high efficiency for physics analyses. In the second half of 2017, the Neural-Ringer algorithm, based on a set of multi-layer perceptron models, replaced the cut-based selection algorithm used in the FastCalo decision step of high-level trigger sequence for events containing electrons above 15 GeV. This was done as part of the ATLAS trigger CPU optimization reduction campaign where it was the first time a neural-network method was employed as a baseline algorithm for event selection in the ATLAS trigger system. The selection algorithm resulted in an early rejection of at least 13 times more background than the previous algorithm strategy, while leaving the electron selection efficiency nearly unchanged.
 
 }
 
@@ -93,16 +94,16 @@ In the second half of 2017, the Neural-Ringer algorithm, based on a set of multi
 % \AtlasCoverTwikiURL{https://twiki.cern.ch/twiki/bin/view/Atlas/WebHome}
 
 % Comment deadline
-\AtlasCoverCommentsDeadline{August 13 2025}
+\AtlasCoverCommentsDeadline{August 18 2025}
 
 % Analysis team members - contact editors should no longer be specified
 % as there is a generic email list name for the editors
-\AtlasCoverAnalysisTeam{Jose Seixas, Denis Oliveira Damazio, Chris Meyer, Werner Spolidoro Freund, Joao Victor Da Fonseca Pinto, Micael Verissimo De Araujo}
+\AtlasCoverAnalysisTeam{Jose Seixas, Denis Oliveira Damazio, Chris Meyer, Werner Spolidoro Freund, Joao Victor Da Fonseca Pinto, Micael Verissimo De Araujo, Edmar Egidio Purcino de Souza, Eduardo Furtado de Simas Filho}
 
 % Editorial Board Members - indicate the Chair by a (chair) after his/her name
 % Give either all members at once (then they appear on one line), or separately
-\AtlasCoverEdBoardMember{Bertrand, Laforge (Paris LPNHE) }
-\AtlasCoverEdBoardMember{Fernando, Monticelli (La Plata) (chair)}
+\AtlasCoverEdBoardMember{Bertrand Laforge (Paris LPNHE) }
+\AtlasCoverEdBoardMember{Fernando Monticelli (La Plata) (chair)}
 % \AtlasCoverEdBoardMember{EdBoard~Chair~(chair)}
 % \AtlasCoverEdBoardMember{EB~Member~1}
 % \AtlasCoverEdBoardMember{EB~Member~2}

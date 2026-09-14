@@ -3,26 +3,28 @@
 
 
 % Comparison with standard strategies
-The \rnn{} has an innovative design for electron selection based on
-calorimetry information. With the
-goal of satisfying specific trigger system demands, feature extraction
-from concentric ring energy sums provides an efficient description, which is quickly derived through simple operations. 
+
+An annular shower shape representation coupled to multi-layer perceptron neural networks (the \rnn{}) provides an innovative machine-learning-based design for online electron selection based on calorimetry information in the ATLAS experiment, aiming to meet specific trigger system requirements, such as reducing fake electrons.
+
+For this, a feature extraction algorithm was implemented to produce
+concentric ring energy sums centered in the hottest cell of each calorimeter layer, which have been shown to provide an efficient description of calorimeter shower profiles and are fast computed through simple operations. 
+
 Neural-network models are employed to exploit non-linear correlations between rings, and the optimization of this strategy 
 culminated in the deployment of a set of models specific to each region of pseudorapidity and transverse energy. 
 
 
-In the second half of 2017, the \rnn{} algorithm replaced a cut-based strategy
-in the \fastcalo{} decision step of the \hlt{} and became the baseline algorithm
-for triggering events containing electrons with \ET above \SI{15}{\GeV}, 
-as part of the ATLAS online system's CPU-time reduction campaign. 
-Furthermore, it was the first time a neural-network method was employed as a baseline event-selection algorithm in the ATLAS trigger system.
+In the second half of 2017, the \rnn{} algorithm replaced a cut-based strategy in the \fastcalo{} decision step of the \hlt{} and became the baseline algorithm for triggering events containing electrons with \ET above \SI{15}{\GeV}, as part of the ATLAS online system's CPU-time reduction campaign. Furthermore, it was the first time a neural-network method was employed as a baseline event-selection algorithm in the ATLAS trigger system.
 
 
-During 2017 operation, the \rnn{} algorithm trained on simulated data reduced fake-electron trigger rates by a factor of 13 in the \fastcalo{} step and by a factor of 2 overall in the \hlt{} with respect to the offline likelihood algorithm. At same time, the \rnn{} achieving high electron-selection efficiencies very similar to those of relevant single-electron triggers without the \rnn{}. For 2018, the \rnn{} was trained with collision data, resulting in an estimated additional fake-rate reduction factor of 1.19--1.69 for fake-electron triggers in the \fastcalo{} step with respect to 2017. 
+During the 2017 operation, the \rnn{} algorithm, trained on simulated data, reduced fake-electron trigger rates by a factor of 13.75 in the \fastcalo{} and by a factor of 2 for the \hlt{} final decision. At the same time, the \rnn{} achieved high electron-selection efficiencies very similar to those of relevant single-electron triggers without the \rnn{}. For 2018, the \rnn{} was trained with collision data, resulting in an estimated additional fake-rate reduction factor of 1.2--1.7 for fake-electron triggers in the \fastcalo{} step with respect to 2017. 
 
 
-The \rnn{} was also studied using offline likelihood as a reference to obtain additional insights into its behavior by using two equivalent single-electron triggers with and without the \rnn{}. 
-The \enquote{quadrant analysis} showed a high level of agreement between the two triggers, with the \rnn{} trigger showing a slight bias towards the signal region in the disagreement profiles of some calorimetry-based variables. Finally, the \enquote{homogeneity tests} between the data collected using triggers with and without the \rnn{} resulted in similar $p$-values. In other words, the fluctuations in the profiles of the calorimetry and track variables are mainly statistical, with no sign of systematic effects due to the trigger configuration.
+The \rnn{} selection was also studied using offline likelihood identification as a reference to obtain additional insights into its behavior by using two equivalent single-electron triggers with and without the \rnn{}. 
+In this analysis, a high level of agreement was observed between the two triggers. Finally, shower-shape and tracking variables used in the offline likelihood identification were compared for electron data collected with the \rnn{}-and cut-based triggers, and a strong statistical similarity was observed, indicating no bias in these variables introduced by the \rnn{} trigger configuration. This confirms that the \rnn{} trigger does not distort the inputs of the offline selection. As a result, the improved efficiency–rejection performance observed with the \rnn{} trigger can be attributed to its online behavior, without compromising the integrity of the offline identification
+
+
+
+%Finally, the \enquote{homogeneity tests} between the data collected using triggers with and without the \rnn{} resulted in similar $p$-values. In other words, the fluctuations in the profiles of the calorimetry and track variables are mainly statistical, with no sign of systematic effects due to the trigger configuration.
 
 
 

@@ -7,6 +7,8 @@
 *-eps-converted-to.pdf
 
 # Generic files to ignore
+*.dvi
+*.ps
 *.aux
 *.bak
 *.bcf
@@ -26,3 +28,9 @@
 *.synctex.gz
 *.tdo
 *.toc
+
+# vim shit
+.*swp
+
+# Macos shit
+.DS_Store

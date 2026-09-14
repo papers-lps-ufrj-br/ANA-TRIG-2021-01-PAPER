@@ -1,0 +1,254 @@
+\section{The \rnn{} algorithm}%
+\label{sec:neuralringer}
+
+The identification of electromagnetic objects at the \fastcalo{} stage of the HLT must efficiently reject the large hadronic background while operating under tight latency constraints.
+The \rnn{} algorithm was developed to enhance this discrimination capability by exploiting the symmetry of electromagnetic showers in the calorimeter. Electrons and photons deposit most of their energy in a compact, centrally concentrated region, whereas hadronic jets exhibit broader, more irregular energy distributions extending into the hadronic calorimeter.
+
+The idea behind the \rnn{} algorithm is to draw concentric rings perpendicular to the particle axis and estimate the energy deposited along each ring. This way, the algorithm summarizes the shower profile as a function of the radial distance from the shower axis, converting the spatially distributed calorimeter information into a compact, physics-motivated representation suitable for neural network classification. 
+
+
+% The \rnn{} algorithm is relies on two main assumptions. First it is assumed that that the energy deposit of particles in the calorimeters have a conical symmetry around the position where the particle hits the detector. The other asumption is that the profile of the energy deposited in the calorimeter as a function of the distance to the particle is different for electrons or photons and QCD particle jets. 
+% %Insteadof using electron shower-shape variables~\cite{TRIG-2018-05} to discriminate between electrons and background, the Neural-Ringer algorithm uses another construction to represent the shower information, referred to here as 'Rings'. These are transverse energy rings, built from sums of calorimeter-cell energies, around each candidate provided as an RoI by the L1 trigger. The distribution of those energy sums is used by a set of neural networks to distinguish electrons from background. This section describes the Neural-Ringer algorithm.
+% 
+
+\subsection{Building the rings}\label{ssec:rnn_for_online_and_eletrons}
+
+%The ATLAS sampling calorimeters provides a measurement of the energy deposited by the interacting particle at different depths.
+%
+%The implementation of the rings in the ATLAS calorimeters rely on the granularity of each calorimeter at each layer. 
+
+The implementation of the \rnn{} defines rings at each layer of both EM and HAD calorimeters. 
+In the ATLAS calorimeter, the rings are built with a rectangular shape to match the grid layout of the calorimeter cells. 
+Since this algorithm was designed to be used in the \fastcalo{} step of the Trigger reconstruction, all the rings are confined within the area defined by the RoI and centered around the cell with the highest energy deposited closest to the L1 RoI position.
+As a general rule, a ring of size $n$ in a given layer of the calorimeter consists of the cells lying in the border of an $n \times n$ cell area. 
+
+%Since the Neural-Ringer algorithm was designed to operate online in software at the \fastcalo{} stage, approximations were made. Specifically, rectangular rings are constructed to match the grid layout of the calorimeter cells, and the ring coverage is bounded by the RoI's area. The granularity changes in different regions of the detector are neglected in order to design an algorithm that uses a cell grid defined as a number of cells in the ($\eta$,$\phi$) directions so that the $\eta\times\phi$ region where the rings are built is not exactly constant along the full detector. This effect is mostly relevant for the EM1 layer where the $\eta$-granularity used by the algorithm is 0.003 for  $0<|\eta|<1.81$, 0.004 for $1.81<|\eta|<2.01$ and 0.006 for $2.01<|\eta|<2.37$.
+
+
+
+
+% The algorithm's RoI covers a calorimeter region of $0.4\times0.4$ in the $\eta\times\phi$ plane, centred on the L1-provided RoI. 
+% The algorithm starts at the EM2, where the $\eta\times\phi$ position of the cell with the highest \ET in the RoI is taken as the centre of the cascade interaction in the calorimeter. This initial seed-cell position is propagated to other calorimeter layers in order to define the axis of the rings in those layers. Then, for each layer, the algorithm refines the seed position by searching for the most energetic cell inside a reconstruction window of $0.1\times0.1$ in the $\eta\times\phi$ plane centred on the EM2 initial seed, and the energy deposition of an incoming particle is extracted by building concentric rings of cells, simply referred to as \enquote{rings}. 
+
+\begin{figure}[h!t]
+	\centering
+	\includegraphics[width=0.8\textwidth]{figures/ATLAS_Layers_V4.png}
+	\caption{\label{fig:calo_rings}
+		Sketch illustrating the ring-shaped energy description.
+		The most energetic cell of the RoI is in red, while the consecutive neighbouring rings are represented by alternating white and black cells. Extracted from~\cite{TRIG-2018-05}.    
+	}
+\end{figure}
+
+
+
+
+The actual definition of the rings is depicted in Figure~\ref{fig:calo_rings}. In the EM calorimeter, rings are centered around the most energetic cell at each layer, while in the
+hadronic calorimeter, the $\eta \times \phi$ position of the most energetic cell
+in the second layer of the EM calorimeter is used to determine the central ring.
+%The refined seed ($c_{\text{hot},l}$) is used as the starting point to build the rings. A ring $R_{n,l}$ contains all $c_{n,l}$ cells in calorimeter layer $l$ which are $n$ cells away from the refined seed (\figurename~\ref{fig:calo_rings} shows the parameters used for each layer.). 
+Formally, the cells that belong to a given ring of size $n$ on a given layer $l$ is given by Equation \ref{eq:ring_idx} where $\eta_{i,l}$, $\phi_{i,l}$ represent the position of the cell $i$ at detector layer $l$, the subindex ``hot'' refers to the central cell (first ring) from a given layer; 
+%and $\eta_{\text{hot},l}$, $\phi_{\text{hot},l}$ are respectively the $c_{i,l}$ and $c_{\text{hot},l}$
+%cells' positions in $\eta$ and $\phi$ plane; 
+$h_{\eta,l}$  and $h_{\phi,l}$ are the sizes in $\eta$ and $\phi$ of the cell at the layer $l$ ; $\Theta_{\text{RoI},l}$ is the set of cells
+in the $l^{\text{th}}$ layer which are within the RoI ; and $\lfloor \cdot \rceil$ is the \textit{round} function.
+\tablename~\ref{tab:ring_alg_parameters} shows the number of rings computed at each layer and the respective granularity.
+
+
+\begin{equation}
+\label{eq:ring_idx}
+R_{n,l} = \left\{c_{n,l} \mid n = \left\lfloor \max{\left( 
+\frac{| \eta_{i,l} - \eta_{\text{hot},l} |}{h_{\eta,l}}, 
+\frac{| \phi_{i,l} - \phi_{\text{hot},l} |}{h_{\phi,l}} 
+\right)} \right\rceil, 
+\forall c_{i,l} \in
+\Theta_{\text{RoI},l}
+\right\},
+\end{equation}
+
+
+
+
+\input{tables/granularity}
+
+For every layer of the EM and HAD calorimeters, the transverse energy deposited in the cells of each ring is summed. % to form a one-dimensional descriptor of the shower.
+Across all layers, a total of 100 ring transverse energies are computed, ordered from the innermost EM region to the outermost hadronic layer, and stored in a single vector. Each index in that vector identifies a ring. 
+The energy normalization of the rings is performed as in Eq.~(\ref{eq:ring_norm})
+where $r_k$ or $r_i$ is the sum of transverse energy of the cells in the ring with index $k$ or $i$, and $r^\prime_{k}$ is the normalized ring energy value with index $k$.
+The absolute value is used in the denominator to handle extreme cases where the total energy sum is negative. In this way, the consistency of positive or negative values is maintained after normalization. This procedure was initially proposed and examined in Ref.~\cite{1995_seixas_ringer} as a way of preserving the shower energy profile as fractions of the total energy. Building rings in this way summarizes the information of thousands of calorimeter cells into just 100 variables, while preserving both the longitudinal and lateral structure of the energy deposition.
+
+\begin{equation}
+  r^\prime_{k} = \frac{r_{k}}{| \sum\limits_{i=1}^{100} r_i
+  |}, \;\;\;
+    \forall \; k\in\{1,\dots,100\},
+\label{eq:ring_norm}
+\end{equation}
+
+
+%The sums of the transverse energies of cells $c_{n,l}$ in the rings $R_{n,l}$ form a vector of discriminating quantities. They are ordered laterally outwards and longitudinally from the innermost to outermost layer of the calorimeter, thus providing the ring-shaped information about the RoI.
+
+%The ring-building process results in a total of 100 rings across all calorimeter layers in each RoI. Well-known features of EM shower physics allow a large reduction in dimensionality to be achieved by compacting the typical input space of approximately 1000--1200 cells per RoI into these 100 rings: the rings can keep a complete description of the longitudinal and symmetric lateral information. 
+%However, the algorithm only approximates this concept in order to meet the online operation requirements and avoid further manipulation of the instrumental information. 
+Figure~\ref{fig:rings_profile} shows the distribution of ring energy as a function of the ring number (or vector index) for electrons and QCD jets obtained in simulated events. 
+Rings within vertical dashed lines belong to the same layer of the same calorimeter. The distribution of the ring energy for layer 2 of the EM calorimeter (EM2) is shown in the figure, zoomed in. 
+
+
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.9\textwidth]{figures/ring_shape.pdf}
+  \caption{Simulated average ring transverse energy profiles for jets and electrons in the bin $30 \leq \ET < 40$~GeV and $0.0 \leq \eta < 0.8$ for each layer of the calorimeter. The profile in the inset shows the EM1-layer ring energies on a logarithmic scale. 
+  Almost all the energy of the electrons is absorbed by the electromagnetic layers, and no energy deposit is expected in the hadronic calorimeter. On the contrary, a significant fraction of the jet energy is absorbed by the hadronic layers, and only a part of it is absorbed by the electromagnetic calorimeter.
+  The shaded area indicates the standard deviation of each ring energy.}
+  \label{fig:rings_profile}
+\end{figure}
+
+
+
+\subsection{Motivation for using a set of neural networks}\label{ssec:nn_set}
+
+The detector response and discrimination power between electrons and QCD jets vary with the candidate $E_T$ and its $\eta$ position, due to the different granularities of the calorimeters at different pseudorapidities. Therefore, a set of multi-layer perceptrons (MLPs) trained on different regions of $E_T \times |\eta|$ is used to classify the normalized vector of ring energies. 
+% For calorimetry, the use of a set of models, each specific to a particular phase-space region, mitigates fluctuations in the variables' profiles
+% due to differences in shower energy and detector response.
+% A large contribution comes from discrete detector-granularity changes in the phase space. Other important factors 
+% influencing such profiles are the
+% amount of the detector material as a function of \abseta{} and the dependence of the
+% underlying shower-development processes on the incoming
+% particle's energy. Although the latter changes are mostly continuous, it is also
+% possible to approach the problem via space discretization.
+Splitting the training into multiple small models enables higher discrimination power and efficient in terms of computing resources compared to a single model that is inclusive over all $E_T$ and $|\eta|$ regions.
+
+
+% At the hardware resource level, splitting the training into multiple small models to accommodate detector response inhomogeneities speeds up the training cycle and allows data to be handled in memory, since only a small portion of the data is used to train a specific model. Limiting the memory required for tuning the models was of particular interest in order to benefit from low-memory processing nodes, as these were the ones mostly available in the Worldwide LHC Computing Grid~\cite{2015_lcg_tdr} during the model developments process effort.\@ In addition, the decomposition of the problem can also lead to a reduction in training time~\cite{Polikar2006}, as observed heuristically
+%\footnote{When using NVIDIA RTX 2080Ti in tensorflow 1.14 and a minibatch size of 1024, a MLP with single hidden layer, a substantial increase in the runtime (from 4 to 41 seconds per epoch) with respect to the set version was observed.} 
+%when comparing the tuning time of the set with that of a single overall model. 
+%With regard to operation, the proposed set only requires the choice of a single model in order to operate, whereas the more common committee-machine approaches require the computation of different models to run in parallel with a fusion method~\cite{zhou_ensemble}.
+
+%The configuration chosen for the MPL 
+%minimal overhead in terms of trigger latency. Similarly, our choice was to
+Low-complexity models, featuring a single hidden layer and a small number of neurons, were selected for the MPL set to accommodate limited CPU resources during the Fast Processing step of the Trigger and to minimize latency. %, to develop a method competitive with the cut-based approach in terms of processing speed.
+
+
+
+
+
+
+\subsection{Datasets and training}
+
+The \rnn{} algorithm implemented online during 2017 was trained with simulated samples of \Zee events for signal and QCD dijet events for background.  To enrich the sample of electron backgrounds in the QCD simulation, only events where the sum of transverse energy of particles of the hard scatter (excluding muons and neutrinos) in a window of $\Delta\eta\times\Delta\phi=0.1\times0.1$  exceeds 17 GeV are selected.
+%
+%
+%
+%
+%=====================
+% The training procedure for 2017 operation was based on samples of simulated \Zee decays, selected with a \Zee \tnp method~\cite{TRIG-2018-05}, and 
+% QCD dijet background events, both generated with Pythia 8.186. 
+% For the \tnp method in a \Zee decay, one of the electrons candidates must satisfy the Tight identification criteria, the tag, while the second electron candidate, the probe, is later used to train the set of neural networks of the ringer algorithm. 
+% For simulated QCD dijet samples, a filter was applied to enrich them with particles produced in the hard scatter with a summed transverse energy exceeding 17~GeV in a region of $\Delta\eta\times\Delta\phi=0.1\times0.1$.
+Both \Zee and hadronic jets from QCD hard-scatter simulated events included pileup of 60 interactions per bunch crossing, covering the full Run-2 running conditions.
+
+%In order to ensure good performance of the \rnn{} algorithm in data, the cut value on the network discriminator was chosen to be 99\% efficient selecting electrons from 2016 data identified qith the \tnp{} method and passing the offline likelihood \enquote{medium} identification.
+
+
+%=====================
+%After the training stage, threshold values for the discriminating variables must be determined in order to select good electron candidates. Since the thresholds obtained in simulation caused efficiency losses at the end of the HLT due to differences in the model responses between collision data and simulation, new values were obtained using probe electrons selected by the \Zee \tnp method from the full set of 13~TeV collision data \textit{pp} recorded by ATLAS in 2016, which also satisfied the electron Tight offline criteria available.
+%
+%
+%For background, objects rejected by the \Zee \tnp method, which do not belong to any tag--probe electron pair, were used if they were also rejected by the electron Loose offline criteria. During 2016 data-taking, pileup reached 40 interactions per bunch crossing.
+
+The \rnn{} implementation deployed for 2018 was trained using data from  LHC $pp$ collisions at $\sqrt{S} = 13$ TeV collected during the 2017 run, that were approved in ATLAS collaboration requirements for beam stability, detector operation, and data quality~\cite{DAPR-2018-01}. A dedicated MLP model was defined for each \eteta region.
+
+Threshold values for the NN outputs were defined based on 2016 collision data, aiming for a signal efficiency comparable to that of the cut-based trigger. The training procedure and decision-making process were identical across all phase-space regions. Each MLP serves as an expert model corresponding to a specific phase-space region, with its own topology and parameters.
+
+% \subsection{Training and operation}\label{sec:tuning}
+%
+%
+% The 2017 procedure derived a specific MLP model for each region of \eteta phase space, using simulated samples, and defined threshold values for the discriminating variables by using 2016 collision data and targeting a signal efficiency similar to that of the cut-based trigger. The training procedure and decision-making processes were the same for all phase-space regions. For the \rnn{}, each MLP is an expert model for a single phase-space region, containing its own topology and parameters.
+% 
+% The model parameters were optimized using events selected from simulation datasets. 
+% The structure consists of a single fully-connected hidden layer, which may contain from 5 to 20 hidden units, an input layer with 100 inputs, one for each ring, and an output layer with a single neuron. 
+% The activation function for both the hidden and output neurons is a hyperbolic tangent, which has often been  used in MLP designs~\cite{haykin_2008}. 
+
+%A dedicated MLP model was defined for each \eteta region during Run 2, except for 2017, where an MLP model was defined for each \eteta and for each of the three operation working points \enquote{loose}, \enquote{medium}, and \enquote{tight} of the \rnn{}.
+
+To train the models, electrons from the signal sample are selected using the \tnp method described in \cite{TRIG-2018-05}, in which one electron (the tag) is used to trigger the event and is requested to satisfy tight identification and isolation requirements offline. A second electron (the probe) is required to be in the acceptance of the EM Calo, requiring only that the invariant mass of the Tag and Probe system is compatible with the Z boson mass window. %This makes the probe almost unbiased with respect to offline identification and completely unbiased with respect to the trigger selection.
+
+The model parameters were optimized using events selected from simulated \Zee datasets. The network architecture consists of a single fully connected hidden layer with 5 to 20 hidden neurons, an input layer with 100 nodes (one for each ring), and an output layer with a single neuron.
+The activation function for both the hidden and output neurons is the hyperbolic tangent, which is commonly used in MLP designs~\cite{haykin_2008}.
+
+
+To assess the statistical fluctuations in the efficiency measurements with respect to the model parameters obtained from the training procedure, the stratified $k$-fold cross-validation method~\cite{haykin_2008} with $k=10$ was employed. The stratified $k$-fold is one of the most common cross-validation techniques and consists of partitioning the dataset into $k$ disjoint subsets, with each model being tested on the $i^\text{th}$ subset after being trained on the other $k-1$ subsets. The dataset stratification follows the empirical order of event selection, allowing for straightforward job parallelization; therefore, no random permutation is employed. 
+
+For each cross-validation sort and working point, 100 networks, initialized as in~\cite{initnw}, are optimized by back-propagating the mean squared error through the RPROP algorithm~\cite{rprop}. This repeated model initialization aims to avoid suboptimal solutions that may arise from gradient descent algorithms.
+For each training procedure, only three models out of the 100 are retained: two for retrieving the best efficiency when fixing the sensitivity or false positive probabilities to the reference \fastcalo{} efficiency, and another that gives the maximum $SP$ value. 
+
+The maximum SP is a value that optimizes the balance between signal detection probability and the probability of fake acceptance in the ROC curve (i.e., the knee of the curve) and is defined as:
+
+\begin{equation*}
+SP = \sqrt{\sqrt{P_\text{D}(1-F_\text{A})}\cdot\frac{P_\text{D} + (1-F_\text{A})}{2}}
+\end{equation*}
+
+
+\noindent where $P_\text{D}$ is the signal detection probability (or sensitivity) and $F_\text{A}$ is the probability of a fake signal (false positive). 
+An early stopping technique~\cite{haykin_2008} is employed to prevent overtraining. The selection of the optimal iteration and operating model is based on a heuristic approach (multi-stop), as described in~\cite{Goodfellow2016}.
+
+%The training strategy for 2017 data-taking considered four regions in $|\eta|$ ($0.0\rightarrow 0.8\rightarrow1.37\rightarrow1.57\rightarrow2.47$) and five regions in \ET ($15~\GeV\rightarrow 20~\GeV\rightarrow 30~\GeV\rightarrow 40~\GeV\rightarrow 50~\GeV\rightarrow\infty$). To comply with stratified k-fold initializations and the search for the optimal number of hidden neurons (5-20), it was necessary to tune 1.3 million neural networks. Finally, the process converged to a set of \SI{20}{MLPs} for each of the four working points employed by electron triggers in the HLT. 
+%
+%It was observed that the rings in the region $2.37 < \abseta < 2.47$ had particular profiles due to the lack of EM1 cells in this region and required a specific discriminant threshold to maintain signal efficiencies close to those of the cut-based triggers. To avoid retraining all models, it was decided to split the last $|\eta|$ region into two, from $1.37\rightarrow 2.47$ to $1.37\rightarrow2.37\rightarrow2.47$, and duplicate all models for this region to the new bin. Finally, the set which was operated in 2017, combines every $\eta$ boundary with each \ET boundary, resulting in a total of 25 MLP models. The set's boundaries are defined in Table~\ref{tab:ensemble_regions}.
+
+
+The training strategy considered five regions in $|\eta|$ ($0.0\rightarrow 0.8\rightarrow1.37\rightarrow1.57\rightarrow2.37\rightarrow2.47$) and five regions in \ET ($15~\GeV\rightarrow 20~\GeV\rightarrow 30~\GeV\rightarrow 40~\GeV\rightarrow 50~\GeV\rightarrow\infty$). To comply with stratified k-fold initializations and the search for the optimal number of hidden neurons (5-20), it was necessary to tune approximately 1.3 million neural networks. Finally, the process converged to a set of \SI{25}{MLPs} for each of the four working points employed by electron triggers in the HLT. %The set's boundaries are defined in Table~\ref{tab:ensemble_regions}.
+
+%\input{tables/ensemble}
+
+
+After the training stage, particle identification is done by applying a threshold requirement to the one-dimensional output node of the MLP associated with the \ eta region of a given electron candidate. 
+As in the HLT likelihood \cite{aaboud2019electron} algorithm, the threshold value used in the \rnn algorithm should be computed as a linear function of \avgmu{}. This allows threshold adjustment as \avgmu{} changes, maintaining the detection rate approximately constant. However, a non-linear behaviour was observed near the asymptote of the output activation function (see Figure~\ref{fig:nn_correction_with_tansig}) when using the \enquote{medium} or \enquote{tight} operating point. This was caused by the nonlinear activation function in the output neuron, and it can be avoided by replacing the hyperbolic tangent activation function, only in the output neuron, with a linear function (Figure~\ref{fig:nn_correction_without_tansig}). All neurons in the hidden layer retained the hyperbolic tangent activation function, preserving the architecture used during training. This simple strategy ensures a linear relation of the targeted\footnote{same signal detection probability as the online precision electron LH algorithm, increased by a factor of 50\% for each of the four trigger operation points.} signal efficiency with respect to the online pileup estimator, similar to what was used in \cite{aaboud2019electron}. 
+To account for Monte Carlo and collision data differences (see Figure~\ref{fig:nn_mc15_vs_data16}), the parameters of the linear threshold correction were derived using 2016 collision data and an upper bound of $\avgmu=40$ pileup interactions (i.e.\ the corrected threshold value is constant for pileup values above this upper bound).
+
+
+\begin{figure}[h!tb]
+  \begin{center}
+  %\hspace{0.01\textwidth}
+  \begin{subfigure}[c]{.48\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/nn_output_versus_mu_with_tanh.pdf}
+  \caption{MLP output with a hyperbolic tangent activation function in the output neuron versus pileup.}
+  \label{fig:nn_correction_with_tansig}
+  \end{subfigure}
+  \hfill
+  \begin{subfigure}[c]{.48\textwidth}
+  \centering
+  \includegraphics[width=\textwidth]{figures/nn_output_versus_mu.pdf}
+  \caption{MLP output with a linear activation function in the output neuron versus pileup.}
+  \label{fig:nn_correction_without_tansig}
+  \end{subfigure}
+  %\hfill
+  \caption{
+    \rnn output as a function of pileup, \avgmu, for \Zee{} probes in 
+    2016 collision data selected using the training criteria.
+    The computed threshold per \avgmu{} unit for achieving the targeted efficiency is shown as a full blue circle. The black line is a linear fit to the thresholds.
+    The output space is computed using the trained model without modifications in (a), 
+    while in (b), the activation function in the output neuron is replaced with a linear function.
+  }%
+  \end{center}
+\end{figure}
+
+\begin{figure}[!ht]
+  \centering
+  \includegraphics[width=0.7\textwidth]{figures/nn_output_mc15_versus_data16_et2_eta0.pdf}
+  \caption{Differences between simulation samples (filled histogram) and collision data (empty histogram) obtained in 2016 \Zee \tnp{} for one region of the phase space. The shift in discriminant value between simulation and collision data is caused by differences between the simulation and data rings used as input
+  to the model. }
+  \label{fig:nn_mc15_vs_data16}
+\end{figure}
+
+
+%After the first deployment in 2017, the \rnn development have undergone minor modifications to cope with different experimental conditions of the ATLAS experiment and also to incorporate innovations in the machine learning domain. for example, for 2018, experimental data from 2017 was used for training and validation, the NN optimizer was changed to \emph{Adam}~\cite{kingma2014adam}, instead of RPROP, and the MLP model topology was modified to use rectified linear units (RELU) as the activation function for the hidden layer, and an output layer with one neuron using a sigmoid activation function. Additionally, the upper bound for threshold corrections was set to $\avgmu{}=100$~pileup interactions in order to extrapolate the operation of the models to a never-reached pileup level. Similar procedure has been done for each new year to ensure that the \rnn is updated for the ATLAS and LHC operating conditions.
+
+%On the other hand, the 2018 training procedure employed a single set structure, with different thresholds, for all working points and used the 2017 collision data, selected with  \Zee{} \tnp{} event selection, for training, as was the case for the derivation of the offline and final \hlt likelihood models~\cite{PERF-2017-01}.  Most aspects of the procedure remained unchanged for 2018. The developments for the 2018 data benefited from the data conditions being similar to those in 2017. To simplify the training strategy, the selection of three models for each training was abandoned, keeping only the maximum $SP$ model, as the previous approach was more complex without a clear increase in trigger efficiency. 
+%
+%Likewise, MLPs with 5 to 10 units in the hidden layer were tuned, as most models did not require more than 10 units in the hidden layer in 2017. The training optimizer was changed to \emph{Adam}~\cite{kingma2014adam}, instead of RPROP, and the MLP model topology was modified to have a hidden layer with fully connected neurons, with rectified linear units (RELU) as the activation function, and an output layer with one neuron using a sigmoid activation function. Specialized MLPs were implemented in the region $2.37<\abseta<2.47$, where different ring profiles were observed before the 2017 operation, resulting in the operation of \SI{25}{MLPs}. Finally, the upper bound for threshold corrections was set to $\avgmu{}=100$~pileup interactions in order to extrapolate the operation of the models to a never-reached pileup level. 
+
+
+
+
+

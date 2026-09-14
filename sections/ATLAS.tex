@@ -1,0 +1,96 @@
+
+\section{Detector and Data acquisition}\label{sec:atlas}
+%
+%
+%The optimal performance in the measurement of electrons and photons plays a fundamental role in searches for new particles, in the measurement of Standard Model cross-sections, and in the precise measurement of the properties of fundamental particles. Here, the electron-based selection is described. Section~\ref{subsec:atlas_detector} describes the ATLAS detector systems in detail with an emphasis on the calorimeter system. The offline electron identification is described in Section~\ref{subsec:electron_offline}. Finally, the electron triggers are described in Section~\ref{subsec:electron_online}.
+
+
+
+\subsection{The ATLAS detector}\label{subsec:atlas_detector}
+
+ATLAS  ~\cite{PERF-2007-01,ATLAS-TDR-19,PIX-2018-001} is a multipurpose detector designed to characterize the particles produced in high-energy proton–proton (pp) and heavy-ion (HI) collisions at the LHC. It is composed of a tracking system in the innermost region around the interaction point, surrounded by calorimeters and muon chambers. The inner tracking detector (ID) is immersed in a 2 T magnetic field produced by a thin superconducting
+solenoid, and provides precise reconstruction of charged-particle tracks in a pseudorapidity\footnote{ATLAS uses a right-handed coordinate system with its origin at the nominal interaction point (IP) in the center of the detector and the $z$-axis along the beam-pipe. The $x$-axis points from the IP to the centre of the LHC ring, and the $y$-axis points upward. Cylindrical coordinates ($r$, $\phi$) are used in the transverse plane, \phi being the azimuthal angle around the beam-pipe. The pseudorapidity is defined in terms of the polar angle $\theta$ as $\eta = -\ln{\tan(\theta/2)}$. The angular distance $\Delta R$ is defined as $\Delta R = \sqrt{(\Delta\eta)^{2} + (\Delta\phi)^{2}}$ . Transverse momenta and energies are defined as $\pT = p\sin\theta$ and $\ET = E\sin\theta$, respectively.} range $|\eta|<2.47$. Its innermost part consists of a silicon pixel detector surrounded by a silicon microstrip tracker, typically with four sensor layers. The outermost region of the tracker is covered by a transition radiation tracker (TRT). It consists of 
+straw drift tubes filled with a gas mixture of Xe, CO$_2$, and O$_2$
+interleaved with polypropylene/polyethylene transition radiators,  creating transition radiation for particles with a large Lorentz factor.
+
+% Surrounding the tracking system, ATLAS has a calorimeter system with both electromagnetic (EM) and hadronic (HAD) components.
+% It is designed to provide a full $\phi$ coverage and covers the pseudorapidity range $|\eta|<4.9$, with finer granularity 
+% over the region matched to the inner detector. The EM calorimeter is a lead/liquid-argon (LAr) sampling calorimeter 
+% with an accordion-geometry. It is divided into two half-barrels ($-1.475<\eta<0$ and $0<\eta<1.475$) and
+% two endcap components ($1.375<|\eta|<3.2$). The transition region
+% between the barrel and endcaps ($1.37<|\eta|<1.52$) contains significant additional 
+% inactive material~\cite{PERF-2007-01}. Over the region devoted to
+% precision measurements ($|\eta|<2.5$, excluding the transition region),
+% the EM calorimeter is segmented into three layers longitudinal in shower depth.
+% The first layer consists of strips finely grained in the $\eta$ direction, 
+% offering excellent discrimination between isolated photons and pairs of closely spaced
+% photons coming from  $\pi^{0}\rightarrow \gamma\gamma$ decay. For electrons 
+% and photons with high transverse energy, most of the energy is collected in the second layer, which has a 
+% lateral granularity of $0.025\times 0.025$ in $(\eta, \phi)$ space. 
+% The third layer provides measurements of energy deposited in the tails of 
+% the shower. In front of the accordion calorimeter, a thin presampler layer, covering the pseudorapidity
+% interval  $|\eta|<1.8$, is used to correct for energy loss upstream of the calorimeter. 
+% 
+% Three hadronic calorimeter layers surround the EM calorimeter. For electrons and photons, they
+% provide additional background discrimination through measurements of hadronic energy.
+% The barrel hadronic calorimeter ($|\eta| < 1.7$) is an iron/scintillator tile sampling calorimeter
+% with wavelength-shifting fibers. For the hadronic endcaps, copper/LAr calorimeters are used. The forward
+% regions (FCal) are instrumented with copper--tungsten/LAr calorimeters for both the EM and hadronic energy measurements
+% up to $|\eta| = 4.9$. The LAr-based detectors are housed in one barrel and two endcap cryostats. 
+% 
+% The outermost layers of ATLAS consist of an external
+% muon spectrometer (MS) in the pseudorapidity range $|\eta|<2.7$, incorporating three large toroidal magnet assemblies with eight coils each.
+% The field integral of the toroids ranges between 2.0 and 6.0$\,$Tm for most of the acceptance.
+% The MS includes precision tracking chambers and fast detectors for triggering. 
+
+
+
+Surrounding the inner tracking system, the ATLAS detector features a calorimeter system composed of both electromagnetic (EM) and hadronic (HAD) sections. 
+This system is designed to ensure complete $\phi$ coverage and spans the pseudorapidity range $|\eta|<4.9$, with enhanced granularity in the region corresponding to the inner detector coverage. 
+%Both calorimeters are composed by layers. Each layer is built by a set calorimeter cells with a rectangular shape in the $\eta, \phi$ plane. 
+
+The EM calorimeter is a lead/liquid-argon (LAr) sampling calorimeter with an accordion-shaped geometry.
+It is segmented into two half-barrels ($-1.475<\eta<0$ and $0<\eta<1.475$) and two endcap modules ($1.375<|\eta|<3.2$).
+The transition area between the barrel and endcap sections ($1.37<|\eta|<1.52$) includes a considerable amount of inactive material~\cite{PERF-2007-01}.
+Within the region where electrons are measured with precision ($|\eta|<2.5$, excluding the transition region),
+the EM calorimeter is structured into three longitudinal layers along the shower depth. Each layer is composed of a set of calorimeter cells with a rectangular shape in the $\eta, \phi$ plane. 
+The first layer features finely segmented cells in the $\eta$ direction,
+which allow effective discrimination between isolated photons and closely spaced photon pairs resulting from $\pi^{0}\rightarrow \gamma\gamma$ decays.
+For high transverse energy electrons and photons, the majority of energy is deposited in the second layer,
+with a cell granularity of $0.025\times 0.025$ in $(\eta, \phi)$ space.
+The third layer captures energy deposits in the shower's tails.
+A thin presampler layer, located in front of the accordion calorimeter and covering $|\eta|<1.8$,
+serves to correct for energy lost before reaching the calorimeter.
+ 
+Beyond the EM calorimeter, three layers of hadronic calorimeters provide additional measurement capabilities.
+Additional background rejection for electrons and photons is achieved by detecting associated hadronic energy.
+The barrel hadronic calorimeter, covering $|\eta| < 1.7$, is a sampling calorimeter using iron and scintillator tiles,
+with light collection via wavelength-shifting fibers. The hadronic endcaps use copper/LAr calorimeters.
+In the forward region (FCal), copper–tungsten/LAr calorimeters are employed for both electromagnetic and hadronic measurements
+extending up to $|\eta| = 4.9$. All LAr-based calorimeters are enclosed within one barrel and two endcap cryostats.
+
+
+The outermost component of ATLAS is the muon spectrometer (MS), which operates in the pseudorapidity range $|\eta|<2.7$
+and consists of three large toroidal magnet systems, each comprising eight coils.
+The magnetic field integral of the toroid system ranges from 2.0 to 6.0 T across most of its coverage.
+The MS integrates precision tracking chambers complemented by fast-response trigger detectors.
+
+% The ATLAS calorimeters comprise rectangular cells in the
+% \etaphi plane for different layers in depth, except for the forward calorimeters. The calorimeter system covers the pseudorapidity range \(|\eta| < 4.9\)~\cite{PERF-2007-01}. Within the region $|\eta|< 3.2$, electromagnetic calorimetry is provided by a high-granularity lead/liquid-argon (LAr) calorimeter (ECal) composed of barrel (EMB1,2,3) sections covering $|\eta|<1.475$ and endcap (EMEC1,2,3) sections covering $1.375<|\eta|<3.2$, with an additional thin LAr presampler (\ps) covering the barrel (PreSamplerB) and endcap (PreSamplerE) regions to correct for energy losses in upstream material~\cite{LARG-2009-01,larg_tdr}. Hadronic calorimetry within $|\eta|< 3.2$ is provided by a steel/scintillator-tile calorimeter (\tilecal)~\cite{TCAL-2017-01,tile_tdr} composed of three barrel sections (TileBar0,1,2) covering $|\eta| < 1.0$ and three extended barrel sections (TileExt1,2,3) covering $0.8<|\eta|< 1.7$, and two copper/LAr hadronic endcap calorimeters (HEC)~\cite{cal_tdr} divided into four modules (HEC0,1,2,3) covering $1.5<|\eta|< 3.2$. Transition regions between calorimeters are used as locations for detector services and induce shower-sharing between calorimeters, which degrades energy measurements in those regions. Here, the barrel-to-endcap transition is complemented by the intermediate tile calorimeter (ITC), which is composed of two modules (TileGap1,2,3) that are attached to the external faces of the barrel and are used to estimate signal losses~\cite{cal_tdr}. The solid-angle coverage is completed with forward
+% copper/LAr and tungsten/LAr calorimeter (FCal) modules optimized for electromagnetic (EM) and hadronic (HAD) measurements, respectively. The calorimeter system
+% provides full azimuthal ($\phi$) coverage with a total of about 190\,000 readout cells. 
+% 
+% 
+% 
+% The electromagnetic and hadronic calorimeters are segmented~\cite{PERF-2007-01} longitudinally (i.e.\ in depth) into three\footnote{The two central layers of each hadronic endcap calorimeter are summed to provide a single measurement.} sampling layers, where each layer has its own lateral ($\eta\times\phi$) granularity. The amount of material in front of each sampling layer varies with \abseta, leading to variations in the expected lateral and longitudinal shower profiles. The expected profiles also depend on the physics object's total energy. In the EM calorimeter, most of the EM shower energy is collected in the second layer (EM2), while the third layer (EM3) provides measurements of energy deposited by the shower tails. However, it should be noted that the first EM layer (EM1) plays an important role in discriminating between photons and $\pi^0$ mesons. The hadronic calorimeters, which surround the EM detectors, provide additional electron discrimination power through energy measurements of possible EM shower tails, as well as rejection of events with activity of hadronic origin via the three sampling layers (HAD1,2,3). The outermost layers of ATLAS consist of an external muon spectrometer (MS) in the pseudorapidity range $|eta|<2.7$. 
+% 
+% 
+\subsection{The trigger system}
+ A hierarchical two-level trigger system~\cite{TRIG-2016-01} is used to select events of interest produced in LHC beam collisions. The first-level (L1) trigger, implemented with custom-made electronics, reads the calorimeters at a coarser granularity to reduce the event rate from the 40~MHz bunch-crossing rate to below 100~kHz. About 35\% corresponds to events with high-energy electromagnetic showers, potentially originating from electrons or photons. The L1 trigger also defines regions-of-interest (RoIs), situated around local regions with high transverse energy, which are processed by the high-level trigger (HLT). %, which is implemented in software. 
+ 
+ The HLT operates in a large computing farm and reduces the rate of events written to disk to an average of approximately 1 kHz. The HLT uses full-granularity calorimeter information, precision measurements
+from the muon spectrometer, and tracking information from the ID, which are not available at L1. HLT reconstruction can be executed either using cells within the RoIs identified at L1 or at full detector scale. The selection of particle candidates by the HLT is performed in a sequence of steps. First, a set of fast reconstruction algorithms is performed, using only detector information within the RoI, and faster and simpler algorithms to achieve early background rejection. Secondly, a set of offline-like precision reconstruction algorithms is executed at a lower rate, with access to the data from the entire detector.
+
+A sequence of L1 and HLT trigger algorithms is called a ``trigger'' and is meant to identify one or more particles of a given type associated to a set of transverse energy or momentum thresholds to provide the trigger system final decision. Electron triggers are meant to select events with electrons in the final state identified by the detector. The ``trigger menu'' defines the configuration of the trigger system, setting a full list of the L1 and HLT triggers. Menu composition and its corresponding trigger thresholds are optimised for the LHC running conditions (beam type, luminosity, etc.) to fit the event acceptance rate and the bandwidth constraints of the data acquisition system of the ATLAS detector, as well as the offline storage constraints.
+% 
+% 
