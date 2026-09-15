@@ -1,36 +1,44 @@
-
 SHELL := /bin/bash
 
+# Configuration
+ENV_NAME := ringer-paper
+ACTIVATE := source activate.sh
 
+.PHONY: install build jupyter clean all env-rm
 
-#
-# build the singularity image
-#
+all: build
 
-build_base:
-	sudo docker build --progress=plain -t ${DOCKER_NAMESPACE}/root_base:v6.31.01 --compress .
-build_sif:	
-	sudo singularity build root_base_v6.31.01.sif docker-daemon://${DOCKER_NAMESPACE}/root_base:v6.31.01
-push:
-	sudo docker push ${DOCKER_NAMESPACE}/root_base:v6.31.01
-pull:
-	sudo singularity pull docker://${DOCKER_NAMESPACE}/root_base:v6.31.01
-clean:
-	docker system prune
+# Install environment and package
+install:
+	@echo "🛠️  Creating/Updating conda environment from environment.yml..."
+	@conda env create -f environment.yml || conda env update -n $(ENV_NAME) -f environment.yml
+	@echo "🛠️  Installing package in editable mode..."
+	@echo "✅ Installation complete."
 
+# Delete the conda environment
+env-rm:
+	@echo "🔥 Removing conda environment: $(ENV_NAME)..."
+	@conda env remove -n $(ENV_NAME) -y || true
+	@echo "✨ Environment removed."
 
-run_local:
-	singularity run --bind /mnt:/mnt ${DOCKER_IMAGES}/root_base_v6.31.01.sif
+# Build target to install the current package in editable mode
+build:
+	@echo "🛠️  Installing package in editable mode..."
+	@$(ACTIVATE) && pip install -e .
 
-run:
-	source envs.sh
-	singularity run --bind /mnt:/mnt --writable-tmpfs ${DOCKER_IMAGES}/root-cern_latest.sif bash ./activate.sh
+# Launch Jupyter Lab within the conda environment
+jupyter:
+	@echo "🚀 Launching Jupyter Lab..."
+	@$(ACTIVATE) && jupyter lab --IdentityProvider.token="" --ServerApp.password=""
 
-#
-# vitual environ
-#
-build_local:
-	virtualenv -p python ${VIRTUALENV_NAMESPACE}
-	source ${VIRTUALENV_NAMESPACE}/bin/activate && pip install -r requirements.txt
-
-
+clean: env-rm
+	@echo "🧹 Cleaning up legacy files..."
+	rm -rf build/
+	rm -rf dist/
+	rm -rf *.egg-info
+	find . -type d -name "__pycache__" -exec rm -rf {} +
+	find . -type f -name "*.pyc" -delete
+	find . -type f -name "*.pyo" -delete
+	find . -type f -name "*.pyd" -delete
+	find . -type f -name ".DS_Store" -delete
+	@echo "✨ Done!"
